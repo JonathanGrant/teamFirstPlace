@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="162427e8-8a84-456b-8db4-474d0ef2ba27" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/teamFirstPlace.py" afterPath="$PROJECT_DIR$/code/teamFirstPlace.py" />
     </list>
     <ignored path="teamFirstPlace.iws" />
@@ -49,8 +48,8 @@
           <file leaf-file-name="teamFirstPlace.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.28920308">
-                  <caret line="15" column="54" selection-start-line="15" selection-start-column="54" selection-end-line="15" selection-end-column="54" />
+                <state vertical-scroll-proportion="0.3277635">
+                  <caret line="17" column="62" selection-start-line="17" selection-start-column="62" selection-end-line="17" selection-end-column="62" />
                   <folding>
                     <element signature="e#0#14#0" expanded="true" />
                   </folding>
@@ -435,8 +434,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28920308">
-          <caret line="15" column="54" selection-start-line="15" selection-start-column="54" selection-end-line="15" selection-end-column="54" />
+        <state vertical-scroll-proportion="0.3277635">
+          <caret line="17" column="62" selection-start-line="17" selection-start-column="62" selection-end-line="17" selection-end-column="62" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
