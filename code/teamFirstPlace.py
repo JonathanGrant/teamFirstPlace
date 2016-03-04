@@ -43,14 +43,6 @@ class Run:
 
                     output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
 
-                    # base version:
-                    # self.create.drive_direct(int(base_speed+output_theta), int(base_speed-output_theta))
-
-                    # improved version 1: stop if close enough to goal
-                    # distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
-                    # if distance < 0.1:
-                    #     break
-
                     # improved version 2: fuse with velocity controller
                     distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
                     output_distance = self.pidDistance.update(0, distance, self.time.time())
