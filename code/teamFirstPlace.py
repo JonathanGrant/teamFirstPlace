@@ -52,6 +52,12 @@ class Run:
 						if distance < 0.1:
 							break
 						#Scan environment for obstacle
-						distanceFromObstacle = 
+						distanceFromObstacle = self.sonar.get_distance()
+						if distanceFromObstacle <= 1.5:
+							atObstacle = True
 					else:
-						
+						base_speed = 0
+						#Scan environment for obstacle
+						distanceFromObstacle = self.sonar.get_distance()
+						if distanceFromObstacle >= 1.5:
+							atObstacle = False
