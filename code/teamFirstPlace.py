@@ -26,11 +26,10 @@ class Run:
             create2.Sensor.LeftEncoderCounts,
             create2.Sensor.RightEncoderCounts,
         ])
-		
+
         print("Ready, Set, GO!")
-		
-		atObstacle = False
-		distanceFromObstacle = 3.3
+        atObstacle = False
+        distanceFromObstacle = 3.3
 
         for goal_x, goal_y in self.waypoints:
             base_speed = 100
@@ -38,27 +37,27 @@ class Run:
             while True:
                 state = self.create.update()
                 if state is not None:
-					if not atObstacle:
-						base_speed = 100
-						self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
-						goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
-						theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
-						output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
+                    if not atObstacle:
+                        base_speed = 100
+                        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+                        goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
+                        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+                        output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
 
-						# improved version 2: fuse with velocity controller
-						distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
-						output_distance = self.pidDistance.update(0, distance, self.time.time())
-						self.create.drive_direct(int(output_theta + output_distance)+base_speed, int(-output_theta + output_distance)+base_speed)
-						if distance < 0.1:
-							break
-						#Scan environment for obstacle
-						distanceFromObstacle = self.sonar.get_distance()
-						if distanceFromObstacle <= 1.5:
-							atObstacle = True
-					else:
-						base_speed = 0
-						#Scan environment for obstacle
-						distanceFromObstacle = self.sonar.get_distance()
-						if distanceFromObstacle >= 1.5:
-							atObstacle = False
-					print(distanceFromObstacle)
+                        # improved version 2: fuse with velocity controller
+                        distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
+                        output_distance = self.pidDistance.update(0, distance, self.time.time())
+                        self.create.drive_direct(int(output_theta + output_distance)+base_speed, int(-output_theta + output_distance)+base_speed)
+                        if distance < 0.1:
+                            break
+                        #Scan environment for obstacle
+                        # distanceFromObstacle = self.sonar.get_distance()
+                        if distanceFromObstacle <= 1.5:
+                            atObstacle = True
+                    else:
+                        base_speed = 0
+                        #Scan environment for obstacle
+                        distanceFromObstacle = self.sonar.get_distance()
+                        if distanceFromObstacle >= 1.5:
+                            atObstacle = False
+                        print(distanceFromObstacle)
