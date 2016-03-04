@@ -61,3 +61,4 @@ class Run:
 						distanceFromObstacle = self.sonar.get_distance()
 						if distanceFromObstacle >= 1.5:
 							atObstacle = False
+					print(distanceFromObstacle)
