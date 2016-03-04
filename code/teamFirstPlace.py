@@ -16,6 +16,59 @@ class Run:
         self.pidTheta = pid_controller.PIDController(200, 5, 50, [-10, 10], [-200, 200], is_angle=True)
         self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
         self.waypoints = [[2 ,0], [2 ,1], [0 ,1], [0 ,0]]
+        
+    def goTowardWaypoint(self, goal_x, goal_y, state):
+        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+        goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
+        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+        output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
+
+        # improved version 2: fuse with velocity controller
+        self.distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
+        output_distance = self.pidDistance.update(0, self.distance, self.time.time())
+        self.create.drive_direct(int(output_theta + output_distance)+self.base_speed, int(-output_theta + output_distance)+self.base_speed)
+        
+    def turnCreate(self, goalTheta, state, pos):
+        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+        output_theta = self.pidTheta.update(self.odometry.theta, goalTheta, self.time.time())
+
+        # improved version 2: fuse with velocity controller
+        if pos:
+            self.create.drive_direct(int(output_theta), int(-output_theta))
+        else:
+            self.create.drive_direct(-int(output_theta), int(output_theta))
+        return output_theta
+        
+    def goAroundObstacle(self, goal_x, goal_y, startTheta):
+        startTime = self.time.time()
+        goalTheta = math.pi / 2
+        prevDist = 0
+        countToTen = 0
+        pos = False
+        Started = False
+        while True:
+            countToTen += 1
+            state = self.create.update()
+            if state is not None:
+                #Turn create around 360 degrees, and scan continuously
+                if self.turnCreate(goalTheta+startTheta, state, pos) < 10:
+                    goalTheta += math.pi / 2
+                #Get the obstacle distance
+                obstacleDist = self.sonar.get_distance()
+                if obstacleDist > 1.2 and not Started:
+                    Started = True
+                    startTime = self.time.time()
+                elif obstacleDist > 1.2 and Started and self.time.time() - startTime > 0.5:
+                    break
+                if obstacleDist <= 1.2:
+                    Started = False
+                if countToTen >= 10:
+                    countToTen = 0
+                    if obstacleDist < prevDist:
+                        #reverse directions
+                        pos = not pos
+                    prevDist = obstacleDist
 
     def run(self):
         self.create.start()
@@ -30,33 +83,20 @@ class Run:
         print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:
-            base_speed = 100
+            self.base_speed = 100
             start_time = self.time.time()
             while True:
                 state = self.create.update()
                 if state is not None:
-                    self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
-                    goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
-                    theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
-                    output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
-                    self.distanceFromObstacle = self.sonar.get_distance()
-                    print(self.distanceFromObstacle)
-                    # improved version 2: fuse with velocity controller
-                    distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
-                    output_distance = self.pidDistance.update(0, distance, self.time.time())
-                    if self.distanceFromObstacle <= 1.0:
-#                        if output_theta < -60:
-#                            output_theta = -60
-#                        elif output_theta > 60:
-#                            output_theta = 60
-                            
-                        self.servo.go_to(output_theta)
-                        self.create.drive_direct(int(output_theta + output_distance)+base_speed, -int(output_theta + output_distance)+base_speed)
-                        print(self.distanceFromObstacle)
-                    else:
-                        self.create.drive_direct(int(output_theta + output_distance)+base_speed, int(-output_theta + output_distance)+base_speed)
-                        self.servo.go_to(-output_theta)
-                        if distance < 0.1:
+                    #Check in front for an immediate obstacle
+                    obstacleDist = self.sonar.get_distance()
+                    if obstacleDist < 0.75:
+                        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+                        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+                        self.goAroundObstacle(goal_x, goal_y, theta)
+                    
+                    self.goTowardWaypoint(goal_x, goal_y, state)
+                    if self.distance < 0.1:
                             break
 
 
