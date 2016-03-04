@@ -27,7 +27,7 @@ class Run:
             create2.Sensor.RightEncoderCounts,
         ])
 		
-		print("Ready, Set, GO!")
+        print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:
             base_speed = 100
