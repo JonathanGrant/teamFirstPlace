@@ -26,13 +26,13 @@ class Run:
             create2.Sensor.LeftEncoderCounts,
             create2.Sensor.RightEncoderCounts,
         ])
+		
+		print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:
             base_speed = 100
             start_time = self.time.time()
-            print("0")
             while True:
-                print("1")
                 state = self.create.update()
                 if state is not None:
                     self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
@@ -43,6 +43,6 @@ class Run:
                     # improved version 2: fuse with velocity controller
                     distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
                     output_distance = self.pidDistance.update(0, distance, self.time.time())
-                    self.create.drive_direct(int(output_theta + output_distance), int(-output_theta + output_distance))
+                    self.create.drive_direct(int(output_theta + output_distance)+base_speed, int(-output_theta + output_distance)+base_speed)
                     if distance < 0.1:
                         break
