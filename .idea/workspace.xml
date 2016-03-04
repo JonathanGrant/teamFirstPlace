@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="162427e8-8a84-456b-8db4-474d0ef2ba27" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/code/competitionOneWinner.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/code/teamFirstPlace.py" afterPath="$PROJECT_DIR$/code/teamFirstPlace.py" />
     </list>
     <ignored path="teamFirstPlace.iws" />
@@ -23,70 +22,100 @@
     <favorites_list name="teamFirstPlace" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="lab3.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/code/lab3.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="teamFirstPlace.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6529563">
-              <caret line="50" column="41" selection-start-line="50" selection-start-column="40" selection-end-line="50" selection-end-column="41" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lab2_sonar_test.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/code/lab2_sonar_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pid_controller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/code/pid_controller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pd_controller2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/code/pd_controller2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pd_controller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/code/pd_controller.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="lab3.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/lab3.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="teamFirstPlace.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.78791773">
+                  <caret line="77" column="51" selection-start-line="77" selection-start-column="51" selection-end-line="77" selection-end-column="51" />
+                  <folding>
+                    <element signature="e#0#14#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="lab2_sonar_test.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/lab2_sonar_test.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="pid_controller.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/pid_controller.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="pd_controller2.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/pd_controller2.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="pd_controller.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/pd_controller.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="lab2_servo_test.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/code/lab2_servo_test.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.52056557">
+                  <caret line="27" column="23" selection-start-line="27" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="teamFirstPlace.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="61" column="34" selection-start-line="61" selection-start-column="34" selection-end-line="61" selection-end-column="34" />
+                  <folding>
+                    <element signature="e#0#14#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -405,10 +434,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/code/lab2_servo_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.52056557">
+          <caret line="27" column="23" selection-start-line="27" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/code/teamFirstPlace.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6529563">
-          <caret line="50" column="41" selection-start-line="50" selection-start-column="40" selection-end-line="50" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.78791773">
+          <caret line="77" column="51" selection-start-line="77" selection-start-column="51" selection-end-line="77" selection-end-column="51" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>

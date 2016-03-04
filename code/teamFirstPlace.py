@@ -51,13 +51,39 @@ class Run:
                         if distance < 0.1:
                             break
                         #Scan environment for obstacle
-                        # distanceFromObstacle = self.sonar.get_distance()
-                        if distanceFromObstacle <= 1.5:
+                        distanceFromObstacle = self.sonar.get_distance()
+                        if distanceFromObstacle <= 1.0:
                             atObstacle = True
+
                     else:
                         base_speed = 0
+                        self.create.drive_direct(0,0)
                         #Scan environment for obstacle
+                        self.servo.go_to(-15)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+                        self.servo.go_to(-30)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+                        self.servo.go_to(-45)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+                        self.servo.go_to(15)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+                        self.servo.go_to(30)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+                        self.servo.go_to(45)
+                        print(distanceFromObstacle)
+                        self.time.sleep(1)
+
+
+
                         distanceFromObstacle = self.sonar.get_distance()
-                        if distanceFromObstacle >= 1.5:
+
+
+
+                        if distanceFromObstacle >= 1.0:
                             atObstacle = False
                         print(distanceFromObstacle)
