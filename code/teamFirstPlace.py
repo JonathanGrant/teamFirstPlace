@@ -1,6 +1,8 @@
 import create2
 import math
 import odometry
+import p_controller
+import pd_controller
 import pd_controller2
 import pid_controller
 
@@ -15,6 +17,7 @@ class Run:
         # self.pidTheta = pd_controller2.PDController(500, 100, -200, 200, is_angle=True)
         self.pidTheta = pid_controller.PIDController(200, 5, 50, [-10, 10], [-200, 200], is_angle=True)
         self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
+        self.pd_controller = pd_controller.PDController(1000, 100, -75, 75)
         self.waypoints = [[2 ,0], [2 ,1], [0 ,1], [0 ,0]]
         
     def goTowardWaypoint(self, goal_x, goal_y, state):
@@ -39,6 +42,22 @@ class Run:
         else:
             self.create.drive_direct(-int(output_theta), int(output_theta))
         return output_theta
+    
+    def followObstacle(self):
+        self.servo.go_to(70)
+        self.time.sleep(2)
+
+        goal_distance = 0.5
+        base_speed = 100
+
+        while True:
+            distance = self.sonar.get_distance()
+            if distance is not None:
+                print(distance)
+                #output = self.p_controller.update(distance, goal_distance)
+                output = self.pd_controller.update(distance, goal_distance, self.time.time())
+                self.create.drive_direct(int(base_speed - output), int(base_speed + output))
+                self.time.sleep(0.01)
         
     def goAroundObstacle(self, goal_x, goal_y, startTheta):
         startTime = self.time.time()
@@ -94,6 +113,7 @@ class Run:
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
                         self.goAroundObstacle(goal_x, goal_y, theta)
+#                        self.followObstacle()
                     
                     self.goTowardWaypoint(goal_x, goal_y, state)
                     if self.distance < 0.1:

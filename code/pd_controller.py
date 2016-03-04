@@ -1,17 +1,25 @@
-class pd_controller:
-    def __init__(self, Kp, Kd):
-        self.Kp = Kp
-        self.Kd = Kd
-        self.prevOutput = 0
-        self.prevError = 0
-        self.currErr = 0
+#!/usr/bin/env python
+import math
 
-        self.prevTime = 0
 
-    def update(self, goal, output, time):
-        #calculate vel
-        self.currErr = goal - output
-        vel = (self.currErr * self.Kp) + (((self.currErr - self.prevError) / (time - self.prevTime)) * self.Kd)
-        self.prevTime = time
-        self.prevError = self.currErr
-        return vel
+class PDController:
+    def __init__(self, kp, kd, min_output, max_output):
+        self.kp = kp
+        self.kd = kd
+        self.minOutput = min_output
+        self.maxOutput = max_output
+        self.previousError = 0.0
+        self.previousTime = None
+
+    def update(self, value, target_value, time):
+        error = target_value - value
+        p = self.kp * error
+        d = 0
+        if self.previousTime is not None:
+            dt = time - self.previousTime
+            if dt > 0:
+                d = self.kd * (error - self.previousError) / dt
+        output = p + d
+        self.previousTime = time
+        self.previousError = error
+        return max(min(output, self.maxOutput), self.minOutput)
