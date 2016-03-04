@@ -27,9 +27,7 @@ class Run:
             create2.Sensor.RightEncoderCounts,
         ])
 
-        for waypoint in self.waypoints:
-			goal_x = waypoint[0]
-			goal_y = waypoint[1]
+        for goal_x, goal_y in self.waypoints:
 			base_speed = 100
 			start_time = self.time.time()
 
