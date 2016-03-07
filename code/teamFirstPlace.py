@@ -19,6 +19,7 @@ class Run:
         self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
         self.pd_controller = pd_controller.PDController(1000, 100, -75, 75)
         self.waypoints = [[2.0, 0.0], [3.0, 2.0], [2.5, 2.0], [0.0, 1.5], [0.0, 0.0]]
+        self.midwayPiont = False
         
     def goTowardWaypoint(self, goal_x, goal_y, state):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
@@ -127,6 +128,8 @@ class Run:
         pos = False
         Started = False
         print(startTheta)
+        obstacleDist = self.sonar.get_distance()
+        self.dont_scan = True       # dont scan
         while True:
             countToTen += 1
             state = self.create.update()
@@ -140,6 +143,7 @@ class Run:
                     Started = True
                     startTime = self.time.time()
                 elif obstacleDist > 1.2 and Started and self.time.time() - startTime > 0.1:
+                    # self.rotateServo(goalTheta*57.2958/2)
                     break
                 if obstacleDist <= 1.2:
                     Started = False
@@ -155,7 +159,44 @@ class Run:
         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
         print([1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y])
         print(theta)
+        self.dont_scan = False
         return [1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y]
+
+    # This scans in a 60 degree arc in front of the robot
+    def scan(self):
+        # for i in range(1,2,1):
+        # lock the scanning to a 60 degree arc
+        if self.scan_counter >= 30 or self.scan_counter <= -30:
+            if self.flip_scan_counter:
+                self.flip_scan_counter = False
+            else:
+                self.flip_scan_counter = True
+
+        if self.dont_scan == False:
+            self.servo.go_to(self.scan_counter)
+            print("counter = ", self.scan_counter)
+            # change the angle by 3 degrees
+            if self.flip_scan_counter:
+                self.scan_counter = self.scan_counter-3
+            else:
+                self.scan_counter = self.scan_counter+3
+
+
+
+    def quickScan(self,):
+        if self.obstacleStillInWay:
+            obstacleDist = self.sonar.get_distance()
+
+            for i in range(-30,30,3):
+                self.servo.go_to(i)
+                self.time.sleep(1)
+                if obstacleDist < 0.75:
+                    self.obstacleStillInWay = True
+                    break
+
+    def rotateServo(self, angle):
+        print("angle is: ", angle)
+        self.servo.go_to(angle)
 
     def run(self):
         self.create.start()
@@ -177,6 +218,12 @@ class Run:
             midY = 0
             self.distanceToMidPoint = 999
             self.distance = 999
+            self.scan_counter = 0
+            self.dont_scan = False
+            self.flip_scan_counter = False
+            self.last_Scanned_obj_posX = 0
+            self.last_Scanned_obj_posY = 0
+            self.obstacleStillInWay = False
             #Rotate towards the waypoint
 #            while True:
 #                state = self.create.update()
@@ -185,13 +232,20 @@ class Run:
 #                    newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
 #                    self.turnCreateAllTheWay(newTheta, state, True)
 #                    break
+            self.quickScan()
             while True:
                 state = self.create.update()
                 if state is not None:
                     #Check in front for an immediate obstacle
-
+                    self.scan()
                     obstacleDist = self.sonar.get_distance()
-                    if obstacleDist < 0.75 and obstacleDist < self.distance:
+
+                    # if obstacleDist < 1.25 and obstacleDist > 0.75:
+                    #     self.dont_scan = True
+                    #     print("object distance = ", obstacleDist)
+
+
+                    if (obstacleDist < 0.75 and obstacleDist < self.distance) or self.obstacleStillInWay:# and (self.scan_counter > 28 or self.scan_counter < -28):
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(self.odometry.y, self.odometry.x)
                         # theta = math.atan2(math.sin(self.odometry.x), math.cos(self.odometry.y))
@@ -200,17 +254,27 @@ class Run:
                         midWayPoint = True
                         self.distanceToMidPoint = 999
                         midX, midY = self.getWaypointOutsideObstacle(theta)
-                        self.servo()
+                        self.obstacleStillInWay = False
+                    # elif obstacleDist < 0.75 and obstacleDist > self.distance:
+                    #     self.dont_scan = True
+
                     elif midWayPoint:
+                        # self.dont_scan = False
                         self.goTowardMidWayPoint(goal_x, goal_y, state, midX, midY)
                     else:
+                        # self.dont_scan = False
                         self.goTowardWaypoint(goal_x, goal_y, state)
+
                     if self.distance < 0.1:
+                        self.dont_scan = False
                         break
                     elif self.distanceToMidPoint < 0.1 and midWayPoint:
                         midWayPoint = False
+                        self.dont_scan = False
+                        # self.rotateServo(theta, midWayPoint)
                         self.distanceToMidPoint = 999
                         #Rotate towards the waypoint
 #                        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
 #                        newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
 #                        self.turnCreateAllTheWay(newTheta, state, True)
+
