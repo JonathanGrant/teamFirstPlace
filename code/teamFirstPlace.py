@@ -18,7 +18,7 @@ class Run:
         self.pidTheta = pid_controller.PIDController(200, 5, 50, [-10, 10], [-200, 200], is_angle=True)
         self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
         self.pd_controller = pd_controller.PDController(1000, 100, -75, 75)
-        self.waypoints = [[2 ,0], [2 ,1], [0 ,1], [0 ,0]]
+        self.waypoints = [[2.0, 0.0], [3.0, 2.0], [2.5, 2.0], [0.0, 1.5], [0.0, 0.0]]
         
     def goTowardWaypoint(self, goal_x, goal_y, state):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
