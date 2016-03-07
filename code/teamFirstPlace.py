@@ -23,7 +23,7 @@ class Run:
     def goTowardWaypoint(self, goal_x, goal_y, state):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
-        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+        theta = math.atan2(math.sin(self.odometry.x), math.cos(self.odometry.y))
         output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
 
         # improved version 2: fuse with velocity controller
@@ -189,15 +189,18 @@ class Run:
                 state = self.create.update()
                 if state is not None:
                     #Check in front for an immediate obstacle
+
                     obstacleDist = self.sonar.get_distance()
                     if obstacleDist < 0.75 and obstacleDist < self.distance:
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(self.odometry.y, self.odometry.x)
+                        # theta = math.atan2(math.sin(self.odometry.x), math.cos(self.odometry.y))
 #                        self.goAroundObstacle(theta)
 #                        self.followObstacle()
                         midWayPoint = True
                         self.distanceToMidPoint = 999
                         midX, midY = self.getWaypointOutsideObstacle(theta)
+                        self.servo()
                     elif midWayPoint:
                         self.goTowardMidWayPoint(goal_x, goal_y, state, midX, midY)
                     else:
