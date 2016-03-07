@@ -172,7 +172,7 @@ class Run:
             else:
                 self.flip_scan_counter = True
 
-        if self.dont_scan == False:
+        if not self.dont_scan:
             self.servo.go_to(self.scan_counter)
             print("counter = ", self.scan_counter)
             # change the angle by 3 degrees
@@ -184,15 +184,17 @@ class Run:
 
 
     def quickScan(self,):
-        if self.obstacleStillInWay:
+        if not self.obstacleStillInWay:
             obstacleDist = self.sonar.get_distance()
 
             for i in range(-30,30,3):
                 self.servo.go_to(i)
-                self.time.sleep(1)
+                self.time.sleep(.5)
                 if obstacleDist < 0.75:
                     self.obstacleStillInWay = True
                     break
+
+            self.servo.go_to(0)
 
     def rotateServo(self, angle):
         print("angle is: ", angle)
