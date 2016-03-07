@@ -178,13 +178,13 @@ class Run:
             self.distanceToMidPoint = 999
             self.distance = 999
             #Rotate towards the waypoint
-#            while True:
-#                state = self.create.update()
-#                if state is not None:
-#                    self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
-#                    newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
-#                    self.turnCreateAllTheWay(newTheta, state, True)
-#                    break
+            while True:
+                state = self.create.update()
+                if state is not None:
+                    self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+                    newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
+                    self.turnCreateAllTheWay(newTheta, state, True)
+                    break
             while True:
                 state = self.create.update()
                 if state is not None:
@@ -200,7 +200,6 @@ class Run:
                         midWayPoint = True
                         self.distanceToMidPoint = 999
                         midX, midY = self.getWaypointOutsideObstacle(theta)
-                        self.servo()
                     elif midWayPoint:
                         self.goTowardMidWayPoint(goal_x, goal_y, state, midX, midY)
                     else:
