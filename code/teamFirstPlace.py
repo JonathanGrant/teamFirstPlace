@@ -31,6 +31,18 @@ class Run:
         output_distance = self.pidDistance.update(0, self.distance, self.time.time())
         self.create.drive_direct(int(output_theta + output_distance)+self.base_speed, int(-output_theta + output_distance)+self.base_speed)
         
+    def goTowardMidWayPoint(self, goal_x, goal_y, state, midX, midY):
+        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+        goal_theta = math.atan2(midY - self.odometry.y, midX - self.odometry.x)
+        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+        output_theta = self.pidTheta.update(self.odometry.theta, goal_theta, self.time.time())
+
+        # improved version 2: fuse with velocity controller
+        self.distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
+        self.distanceToMidPoint = math.sqrt(math.pow(midX - self.odometry.x, 2) + math.pow(midY - self.odometry.y, 2))
+        output_distance = self.pidDistance.update(0, self.distance, self.time.time())
+        self.create.drive_direct(int(output_theta + output_distance)+self.base_speed, int(-output_theta + output_distance)+self.base_speed)
+        
     def turnCreate(self, goalTheta, state, pos):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
@@ -147,23 +159,28 @@ class Run:
             midWayPoint = False
             midX = 0
             midY = 0
+            self.distanceToMidPoint = 999
             while True:
                 state = self.create.update()
                 if state is not None:
                     #Check in front for an immediate obstacle
                     obstacleDist = self.sonar.get_distance()
-                    if obstacleDist < 0.75:
+                    if obstacleDist < 0.75 and obstacleDist < self.distance:
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
 #                        self.goAroundObstacle(theta)
 #                        self.followObstacle()
                         midWayPoint = True
+                        self.distanceToMidPoint = 999
                         midX, midY = self.getWaypointOutsideObstacle(theta)
                     elif midWayPoint:
-                        self.goTowardWaypoint(midX, midY, state)
+                        self.goTowardMidWayPoint(goal_x, goal_y, state, midX, midY)
                     else:
                         self.goTowardWaypoint(goal_x, goal_y, state)
-                    if self.distance < 0.1 and not midWayPoint:
+                    if self.distance < 0.1:
                         break
-                    elif self.distance < 0.1 and midWayPoint:
+                    elif self.distanceToMidPoint < 0.1 and midWayPoint:
                         midWayPoint = False
+                        self.distanceToMidPoint = 999
+                        #Rotate towards the waypoint
+                        
