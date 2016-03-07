@@ -59,7 +59,7 @@ class Run:
                 self.create.drive_direct(int(base_speed - output), int(base_speed + output))
                 self.time.sleep(0.01)
         
-    def goAroundObstacle(self, goal_x, goal_y, startTheta):
+    def goAroundObstacle(self, startTheta):
         startTime = self.time.time()
         goalTheta = math.pi / 2
         prevDist = 0
@@ -88,6 +88,46 @@ class Run:
                         #reverse directions
                         pos = not pos
                     prevDist = obstacleDist
+                    
+    def getWaypointOutsideObstacle(self, startTheta):
+        #scan servo every 15 degrees until we get a place that has a standard value
+        #calculate the waypoint, which should be at (x,y) = (distCosTheta,distSinTheta)
+        startTime = self.time.time()
+        goalTheta = math.pi / 2
+        prevDist = 0
+        countToTen = 0
+        pos = False
+        Started = False
+        print(startTheta)
+        while True:
+            countToTen += 1
+            state = self.create.update()
+            if state is not None:
+                #Turn create around 360 degrees, and scan continuously
+                if self.turnCreate(goalTheta+startTheta, state, pos) < 10:
+                    goalTheta += math.pi / 2
+                #Get the obstacle distance
+                obstacleDist = self.sonar.get_distance()
+                if obstacleDist > 1.2 and not Started:
+                    Started = True
+                    startTime = self.time.time()
+                elif obstacleDist > 1.2 and Started and self.time.time() - startTime > 0.1:
+                    break
+                if obstacleDist <= 1.2:
+                    Started = False
+                if countToTen >= 10:
+                    countToTen = 0
+                    if obstacleDist < prevDist:
+                        #reverse directions
+                        pos = not pos
+                    prevDist = obstacleDist
+        #now create the waypoint
+        #dist on sim is 1.4
+        self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+        theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
+        print([1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y])
+        print(theta)
+        return [1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y]
 
     def run(self):
         self.create.start()
@@ -104,6 +144,9 @@ class Run:
         for goal_x, goal_y in self.waypoints:
             self.base_speed = 100
             start_time = self.time.time()
+            midWayPoint = False
+            midX = 0
+            midY = 0
             while True:
                 state = self.create.update()
                 if state is not None:
@@ -112,12 +155,15 @@ class Run:
                     if obstacleDist < 0.75:
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
-                        self.goAroundObstacle(goal_x, goal_y, theta)
+#                        self.goAroundObstacle(theta)
 #                        self.followObstacle()
-                    
-                    self.goTowardWaypoint(goal_x, goal_y, state)
-                    if self.distance < 0.1:
-                            break
-
-
-                        
+                        midWayPoint = True
+                        midX, midY = self.getWaypointOutsideObstacle(theta)
+                    elif midWayPoint:
+                        self.goTowardWaypoint(midX, midY, state)
+                    else:
+                        self.goTowardWaypoint(goal_x, goal_y, state)
+                    if self.distance < 0.1 and not midWayPoint:
+                        break
+                    elif self.distance < 0.1 and midWayPoint:
+                        midWayPoint = False
