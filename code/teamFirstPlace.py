@@ -47,12 +47,16 @@ class Run:
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
         output_theta = self.pidTheta.update(self.odometry.theta, goalTheta, self.time.time())
-
+        print("out theta: ", output_theta)
         # improved version 2: fuse with velocity controller
         if pos:
             self.create.drive_direct(int(output_theta), int(-output_theta))
         else:
-            self.create.drive_direct(-int(output_theta), int(output_theta))
+            if self.scan_counter >= 0:
+                self.create.drive_direct(-int(output_theta), int(output_theta))
+            else:
+                self.create.drive_direct(int(output_theta), -int(output_theta))
+
         return output_theta
     
     def turnCreateAllTheWay(self, goalTheta, state, pos):
@@ -117,16 +121,22 @@ class Run:
                     prevDist = obstacleDist
                     
     def getWaypointOutsideObstacle(self, startTheta):
-        #scan servo every 15 degrees until we get a place that has a standard value
+        #scan sonar every 15 degrees until we get a place that has a standard value
         #calculate the waypoint, which should be at (x,y) = (distCosTheta,distSinTheta)
         startTime = self.time.time()
         goalTheta = math.pi / 2
+        # if startTheta <= 0:
+        #     goalTheta = (-math.pi / 2)
+        # else:
+        #     goalTheta =  math.pi / 2
+
+        print("start theta: ", startTheta)
+        print("goal theta: ", goalTheta)
         prevDist = 0
         countToTen = 0
         pos = False
         Started = False
         print(startTheta)
-        obstacleDist = self.sonar.get_distance()
         self.dont_scan = True       # dont scan
         while True:
             countToTen += 1
@@ -141,7 +151,6 @@ class Run:
                     Started = True
                     startTime = self.time.time()
                 elif obstacleDist > 1.2 and Started and self.time.time() - startTime > 0.1:
-                    # self.rotateServo(goalTheta*57.2958/2)
                     break
                 if obstacleDist <= 1.2:
                     Started = False
@@ -211,7 +220,6 @@ class Run:
 
         for goal_x, goal_y in self.waypoints:
             self.base_speed = 100
-            start_time = self.time.time()
             midWayPoint = False
             midX = 0
             midY = 0
@@ -223,7 +231,7 @@ class Run:
             self.last_Scanned_obj_posX = 0
             self.last_Scanned_obj_posY = 0
             self.obstacleStillInWay = False
-            self.quickScan()
+            # self.quickScan()
             while True:
                 state = self.create.update()
                 if state is not None:
