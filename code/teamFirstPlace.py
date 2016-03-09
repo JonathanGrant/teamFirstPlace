@@ -19,7 +19,7 @@ class Run:
         self.pd_controller = pd_controller.PDController(1000, 100, -75, 75)
         self.waypoints = [[1.2, 2.1], [2.7, 0.9], [2.7, 2.4], [0.0, 0.0]]
         self.midwayPiont = False
-        
+
     def goTowardWaypoint(self, goal_x, goal_y, state):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         goal_theta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
@@ -30,7 +30,7 @@ class Run:
         self.distance = math.sqrt(math.pow(goal_x - self.odometry.x, 2) + math.pow(goal_y - self.odometry.y, 2))
         output_distance = self.pidDistance.update(0, self.distance, self.time.time())
         self.create.drive_direct(int(output_theta + output_distance)+self.base_speed, int(-output_theta + output_distance)+self.base_speed)
-        
+
     def goTowardMidWayPoint(self, goal_x, goal_y, state, midX, midY):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         goal_theta = math.atan2(midY - self.odometry.y, midX - self.odometry.x)
@@ -42,7 +42,7 @@ class Run:
         self.distanceToMidPoint = math.sqrt(math.pow(midX - self.odometry.x, 2) + math.pow(midY - self.odometry.y, 2))
         output_distance = self.pidDistance.update(0, self.distance, self.time.time())
         self.create.drive_direct(int(output_theta + output_distance)+self.base_speed, int(-output_theta + output_distance)+self.base_speed)
-        
+
     def turnCreate(self, goalTheta, state, pos):
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
@@ -58,7 +58,7 @@ class Run:
                 self.create.drive_direct(int(output_theta), -int(output_theta))
 
         return output_theta
-    
+
     def turnCreateAllTheWay(self, goalTheta, state, pos):
         while True:
             state = self.create.update()
@@ -78,7 +78,7 @@ class Run:
                         self.create.drive_direct(int(output_theta), -int(output_theta))
                 if output_theta < 10:
                     break
-    
+
     def followObstacle(self):
         self.servo.go_to(70)
         self.time.sleep(2)
@@ -93,7 +93,7 @@ class Run:
                 output = self.pd_controller.update(distance, goal_distance, self.time.time())
                 self.create.drive_direct(int(base_speed - output), int(base_speed + output))
                 self.time.sleep(0.01)
-        
+
     def goAroundObstacle(self, startTheta):
         startTime = self.time.time()
         goalTheta = math.pi / 2
@@ -123,7 +123,7 @@ class Run:
                         #reverse directions
                         pos = not pos
                     prevDist = obstacleDist
-                    
+
     def getWaypointOutsideObstacle(self, startTheta):
         #scan sonar every 15 degrees until we get a place that has a standard value
         #calculate the waypoint, which should be at (x,y) = (distCosTheta,distSinTheta)
@@ -220,7 +220,7 @@ class Run:
             create2.Sensor.LeftEncoderCounts,
             create2.Sensor.RightEncoderCounts,
         ])
-		
+
         print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:

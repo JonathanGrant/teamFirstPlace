@@ -13,9 +13,9 @@ class Run:
         self.servo = servo
         self.odometry = odometry.Odometry()
         # self.pidTheta = pd_controller2.PDController(500, 100, -200, 200, is_angle=True)
-        self.pidTheta = pid_controller.PIDController(300, 5, 50, [-10, 10], [-200, 200], is_angle=True)
-        self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
-        self.waypoints = [[2 ,0], [2 ,1], [0 ,1], [0 ,0]]
+        self.pidTheta = pid_controller.PIDController(200, 15, 5, [-10, 10], [-200, 200], is_angle=True)
+        self.pidDistance = pid_controller.PIDController(100, 15, 5, [-10, 10], [-200, 200], is_angle=False)
+        self.waypoints = [[4*.3, 7*.3], [9*.3, 3*.3], [9*.3, 9*.3], [0, 0]]
 
     def run(self):
         self.create.start()
@@ -30,7 +30,7 @@ class Run:
         print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:
-            base_speed = 100
+            base_speed = 50
             start_time = self.time.time()
             while True:
                 state = self.create.update()
