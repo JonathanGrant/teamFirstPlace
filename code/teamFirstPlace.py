@@ -14,10 +14,10 @@ class Run:
         self.servo = servo
         self.odometry = odometry.Odometry()
         # self.pidTheta = pd_controller2.PDController(500, 100, -200, 200, is_angle=True)
-        self.pidTheta = pid_controller.PIDController(200, 5, 50, [-10, 10], [-200, 200], is_angle=True)
-        self.pidDistance = pid_controller.PIDController(1000, 0, 50, [0, 0], [-200, 200], is_angle=False)
+        self.pidTheta = pid_controller.PIDController(200, 25, 5, [-1, 1], [-200, 200], is_angle=True)
+        self.pidDistance = pid_controller.PIDController(100, 15, 5, [-10, 10], [-200, 200], is_angle=False)
         self.pd_controller = pd_controller.PDController(1000, 100, -75, 75)
-        self.waypoints = [[2.0, 0.0], [3.0, 2.0], [2.5, 2.0], [0.0, 1.5], [0.0, 0.0]]
+        self.waypoints = [[1.2, 2.1], [2.7, 0.9], [2.7, 2.4], [0.0, 0.0]]
         self.midwayPiont = False
         
     def goTowardWaypoint(self, goal_x, goal_y, state):
@@ -71,7 +71,11 @@ class Run:
                 if pos:
                     self.create.drive_direct(int(output_theta), int(-output_theta))
                 else:
-                    self.create.drive_direct(-int(output_theta), int(output_theta))
+#                    self.create.drive_direct(-int(output_theta), int(output_theta))
+                    if self.scan_counter >= 0:
+                        self.create.drive_direct(-int(output_theta), int(output_theta))
+                    else:
+                        self.create.drive_direct(int(output_theta), -int(output_theta))
                 if output_theta < 10:
                     break
     
@@ -154,7 +158,7 @@ class Run:
                     break
                 if obstacleDist <= 1.2:
                     Started = False
-                if countToTen >= 10:
+                if countToTen >= 1000:
                     countToTen = 0
                     if obstacleDist < prevDist:
                         #reverse directions
@@ -164,15 +168,15 @@ class Run:
         #dist on sim is 1.4
         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
         theta = math.atan2(math.sin(self.odometry.theta), math.cos(self.odometry.theta))
-        print([1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y])
+        print([0.75 * math.cos(theta) + self.odometry.x, 0.75 * math.sin(theta) + self.odometry.y])
         print(theta)
         self.dont_scan = False
-        return [1.4 * math.cos(theta) + self.odometry.x, 1.4 * math.sin(theta) + self.odometry.y]
+        return [0.75 * math.cos(theta) + self.odometry.x, 0.75 * math.sin(theta) + self.odometry.y]
 
     # This scans in a 60 degree arc in front of the robot
     def scan(self):
         # lock the scanning to a 60 degree arc
-        if self.scan_counter >= 30 or self.scan_counter <= -30:
+        if self.scan_counter >= 42 or self.scan_counter <= -30:
             if self.flip_scan_counter:
                 self.flip_scan_counter = False
             else:
@@ -207,6 +211,7 @@ class Run:
         self.servo.go_to(angle)
 
     def run(self):
+        startTime = self.time.time()
         self.create.start()
         self.create.safe()
 
@@ -219,7 +224,7 @@ class Run:
         print("Ready, Set, GO!")
 
         for goal_x, goal_y in self.waypoints:
-            self.base_speed = 100
+            self.base_speed = 75
             midWayPoint = False
             midX = 0
             midY = 0
@@ -232,6 +237,16 @@ class Run:
             self.last_Scanned_obj_posY = 0
             self.obstacleStillInWay = False
             # self.quickScan()
+            #Rotate towards the waypoint
+            while True:
+                state = self.create.update()
+                if state is not None:
+                    self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+                    newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
+                    self.turnCreateAllTheWay(newTheta, state, True)
+                    break
+
+            
             while True:
                 state = self.create.update()
                 if state is not None:
@@ -239,7 +254,7 @@ class Run:
                     self.scan()
                     obstacleDist = self.sonar.get_distance()
 
-                    if (obstacleDist < 0.75 and obstacleDist < self.distance) or self.obstacleStillInWay:
+                    if (obstacleDist < 0.65 and obstacleDist < self.distance) or self.obstacleStillInWay:
                         self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
                         theta = math.atan2(self.odometry.y, self.odometry.x)
                         midWayPoint = True
@@ -259,3 +274,12 @@ class Run:
                         midWayPoint = False
                         self.dont_scan = False
                         self.distanceToMidPoint = 999
+                        #Rotate towards the waypoint
+                        while True:
+                            state = self.create.update()
+                            if state is not None:
+                                self.odometry.update(state.leftEncoderCounts, state.rightEncoderCounts)
+                                newTheta = math.atan2(goal_y - self.odometry.y, goal_x - self.odometry.x)
+                                self.turnCreateAllTheWay(newTheta, state, True)
+                                break
+        print(startTime - self.time.time())
